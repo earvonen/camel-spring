@@ -20,6 +20,10 @@
     <spring.boot-version>3.2.5</spring.boot-version>
     <surefire.plugin.version>3.0.0-M4</surefire.plugin.version>
     <jkube.generator.from>registry.access.redhat.com/ubi8/openjdk-17:latest</jkube.generator.from>
+
+    <jkube.generator.name>quay.io/hawtio/%a:latest</jkube.generator.name>
+    <!-- Use Jib in order not to depend on docker nor podman -->
+    <jkube.build.strategy>jib</jkube.build.strategy>
   </properties>
 
   <dependencyManagement>
@@ -64,6 +68,15 @@
     <dependency>
       <groupId>org.apache.camel.springboot</groupId>
       <artifactId>camel-stream-starter</artifactId>
+    </dependency>
+
+    <!--
+      This dependency is mandatory for enabling Camel management
+      via JMX / Hawtio.
+    -->
+    <dependency>
+      <groupId>org.apache.camel.springboot</groupId>
+      <artifactId>camel-management-starter</artifactId>
     </dependency>
 
     <!-- Test -->
@@ -133,6 +146,34 @@
         <extensions>true</extensions>
         <configuration>
           <skip>false</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.jkube</groupId>
+        <artifactId>kubernetes-maven-plugin</artifactId>
+        <version>${kubernetes-maven-plugin-version}</version>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <resources>
+            <env>
+              <!--
+                By default, JKube plugin sets up a Jolokia agent with HTTPS and
+                SSL client authentication enabled. The only necessary configurations
+                are the client principal that matches the Hawtio Online instance
+                (the default is `hawtio-online.hawtio.svc`) and the CA cert to
+                specify `service-ca.crt` instead of the default `ca.crt`.
+              -->
+              <AB_JOLOKIA_AUTH_OPENSHIFT>cn=hawtio-online.hawtio.svc</AB_JOLOKIA_AUTH_OPENSHIFT>
+              <AB_JOLOKIA_OPTS>caCert=/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt</AB_JOLOKIA_OPTS>
+            </env>
+          </resources>
         </configuration>
       </plugin>
     </plugins>
