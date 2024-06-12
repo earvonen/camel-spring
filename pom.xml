@@ -31,7 +31,7 @@
       <dependency>
         <groupId>com.redhat.camel.springboot.platform</groupId>
         <artifactId>camel-spring-boot-bom</artifactId>
-        <version>4.4.0.redhat-00014</version>
+        <version>4.0.0.redhat-00072</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -70,14 +70,22 @@
       <artifactId>camel-stream-starter</artifactId>
     </dependency>
 
-    <!--
-      This dependency is mandatory for enabling Camel management
-      via JMX / Hawtio.
-    -->
-    <dependency>
-      <groupId>org.apache.camel.springboot</groupId>
-      <artifactId>camel-management-starter</artifactId>
-    </dependency>
+  <dependency>
+    <groupId>io.hawt</groupId>
+    <artifactId>hawtio-springboot</artifactId>
+  </dependency>
+
+   <!-- Mandatory for enabling Camel management via JMX / Hawtio -->
+  <dependency>
+    <groupId>org.apache.camel.springboot</groupId>
+    <artifactId>camel-management-starter</artifactId>
+  </dependency>
+
+  <!-- (Optional) Required for Hawtio Camel route diagram tab -->
+  <dependency>
+    <groupId>org.apache.camel.springboot</groupId>
+    <artifactId>camel-spring-boot-xml-starter</artifactId>
+  </dependency>
 
     <!-- Test -->
     <dependency>
